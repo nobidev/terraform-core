@@ -110,6 +110,18 @@ func (b *ApplyGraphBuilder) Steps() []GraphTransformer {
 			Config:   b.Config,
 		},
 
+		// Add nodes and edges for check block assertions. Check block data
+		// sources were added earlier.
+		&checkTransformer{
+			Config: b.Config,
+
+			// We only report the checks during the planning phase.
+			ReportChecks: false,
+
+			// We only apply the checks on plan and apply operations.
+			ExecuteChecks: b.Operation == walkApply || b.Operation == walkDestroy,
+		},
+
 		// Attach the state
 		&AttachStateTransformer{State: b.State},
 
